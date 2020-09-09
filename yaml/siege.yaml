@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: siege
-  namespace: ssak3
+  namespace: ssak12
 spec:
   containers:
     - name: siege

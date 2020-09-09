@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dashboard
-  namespace: ssak3
+  namespace: ssak12
   labels:
     app: dashboard
 spec:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: ssak3acr.azurecr.io/dashboard:1.0
+          image: ssak12acr.azurecr.io/dashboard:1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -44,7 +44,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: dashboard
-  namespace: ssak3
+  namespace: ssak12
   labels:
     app: dashboard
 spec:

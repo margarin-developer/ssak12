@@ -1,32 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reservation
+  name: review
   namespace: ssak12
   labels:
-    app: reservation
+    app: review
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reservation
+      app: review
   template:
     metadata:
       labels:
-        app: reservation
+        app: review
     spec:
       containers:
-        - name: reservation
-          image: ssak12acr.azurecr.io/reservation:1.0
+        - name: review
+          image: ssak12acr.azurecr.io/review:1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          env:
-            - name: api.url.payment
-              valueFrom:
-                configMapKeyRef:
-                  name: ssak12-config
-                  key: api.url.payment
           readinessProbe:
             httpGet:
               path: '/actuator/health'
@@ -49,13 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reservation
+  name: review
   namespace: ssak12
   labels:
-    app: reservation
+    app: review
 spec:
   ports:
     - port: 8080
       targetPort: 8080
   selector:
-    app: reservation
+    app: review
