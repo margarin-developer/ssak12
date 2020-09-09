@@ -1,0 +1,90 @@
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: Reservation
+          uri: http://localhost:8081
+          predicates:
+            - Path=/cleaningReservations/** 
+        - id: Cleaning
+          uri: http://localhost:8082
+          predicates:
+            - Path=/cleans/** 
+        - id: Payment
+          uri: http://localhost:8083
+          predicates:
+            - Path=/payments/** 
+        - id: DashBoard
+          uri: http://localhost:8084
+          predicates:
+            - Path= /dashBoardViews/**
+        - id: Message
+          uri: http://localhost:8085
+          predicates:
+            - Path=/messages/**
+        - id: Review
+          uri: http://localhost:8086
+          predicates:
+            - Path=/reviews/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://reservation:8080
+          predicates:
+            - Path=/cleaningReservations/** 
+        - id: cleaning
+          uri: http://cleaning:8080
+          predicates:
+            - Path=/cleans/** 
+        - id: payment
+          uri: http://payment:8080
+          predicates:
+            - Path=/payments/** 
+        - id: dashBoard
+          uri: http://dashBoard:8080
+          predicates:
+            - Path= /dashBoardViews/**
+        - id: message
+          uri: http://message:8080
+          predicates:
+            - Path=/messages/**
+        - id: review
+          uri: http://review:8080
+          predicates:
+            - Path=/reviews/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080

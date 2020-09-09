@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ssak3-config
+  namespace: ssak3
+data:
+  api.url.payment: http://payment:8080

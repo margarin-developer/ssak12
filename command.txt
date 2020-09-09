@@ -1,0 +1,35 @@
+//카프카
+zookeeper-server-start.bat ../../config/zookeeper.properties
+kafka-server-start.bat ../../config/server.properties
+kafka-topics.bat --list --zookeeper localhost:2181
+kafka-console-producer.bat --broker-list localhost:9092 --topic CleaningServiceYD
+kafka-console-consumer.bat --bootstrap-server http://localhost:9092 --topic CleaningServiceYD --from-beginning
+
+//Httpie
+http GET http://localhost:8081/cleaningReservations
+http GET http://localhost:8083/payments
+http GET http://localhost:8082/cleans
+http GET http://localhost:8085/messages
+http GET http://localhost:8084/dashBoardViews
+
+http GET http://reservation:8080/cleaningReservations
+http GET http://payment:8080/payments
+http GET http://cleaning:8080/cleans
+http GET http://message:8080/messages
+http GET http://dashBoard:8080/dashBoardViews
+
+//예약
+http POST http://localhost:8081/cleaningReservations requestDate=20200907 place=seoul status=ReservationApply price=2000 customerName=yeon
+
+http POST http://reservation:8080/cleaningReservations requestDate=20200907 place=seoul status=ReservationApply price=2000 customerName=yeon
+//예약취소
+http DELETE http://localhost:8081/cleaningReservations/1
+
+http DELETE http://reservation:8080/cleaningReservations/1
+
+//청소
+http POST http://localhost:8082/cleans status=CleaningStarted requestId=1 cleanDate=20200909
+
+http POST http://cleaning:8080/cleans status=CleaningStarted requestId=1 cleanDate=20200909
+
+az login -u TeamA@gkn2019hotmail.onmicrosoft.com -p skcc1234!!

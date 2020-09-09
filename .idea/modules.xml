@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Cleaning/Cleaning.iml" filepath="$PROJECT_DIR$/Cleaning/Cleaning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DashBoard/DashBoard.iml" filepath="$PROJECT_DIR$/DashBoard/DashBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Message/Message.iml" filepath="$PROJECT_DIR$/Message/Message.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Payment/Payment.iml" filepath="$PROJECT_DIR$/Payment/Payment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Reservation/Reservation.iml" filepath="$PROJECT_DIR$/Reservation/Reservation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Review/Review.iml" filepath="$PROJECT_DIR$/Review/Review.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway/boot-camp-gateway.iml" filepath="$PROJECT_DIR$/gateway/boot-camp-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ssak12.iml" filepath="$PROJECT_DIR$/.idea/ssak12.iml" />
+    </modules>
+  </component>
+</project>
