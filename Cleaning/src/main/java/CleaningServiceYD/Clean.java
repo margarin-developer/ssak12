@@ -38,6 +38,7 @@ public class Clean {
             cleaningFinished.setRequestId(getRequestId());
             cleaningFinished.setStatus("CleaningFinished");
             cleaningFinished.setCleanDate(getCleanDate());
+
             cleaningFinished.publishAfterCommit();
         }
     }

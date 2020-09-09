@@ -21,6 +21,12 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: api.url.review
+              valueFrom:
+                configMapKeyRef:
+                  name: ssak12-config
+                  key: api.url.review
           readinessProbe:
             httpGet:
               path: '/actuator/health'
