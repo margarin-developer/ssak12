@@ -5,3 +5,4 @@ metadata:
   namespace: ssak12
 data:
   api.url.payment: http://payment:8080
+  api.url.review: http://review:8080
