@@ -36,6 +36,8 @@
 - 상태가 바뀔때마다 알림을 줄 수 있어야 한다 → Event driven
 
 # 분석/설계 (http://www.msaez.io/#/storming/nPLWWPCPVgYUDyEVhn42SQykdFz1/mine/94c463ba57f00086df5d2362921d3de8/-MGkjTbFB32Pt_czIZm1)
+![eventstorming](https://user-images.githubusercontent.com/62707074/92684483-8155ec00-f370-11ea-9bce-a522d3366976.png)
+
 ![이미지 1](https://user-images.githubusercontent.com/62707074/92624856-f12d8d80-f302-11ea-9841-e17062b71be5.png)
   
 * 도메인 서열 분리 
