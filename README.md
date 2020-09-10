@@ -641,83 +641,6 @@ x-envoy-upstream-service-time: 439
   * 각 구현체들은 github의 각각의 source repository 에 구성
   * Image repository는 Azure 사용
 
-## 동기식 호출 / 서킷 브레이킹 / 장애격리
-
-### 서킷 브레이킹 프레임워크의 선택: istio-injection + DestinationRule
-
-* istio-injection 적용 (기 적용완료)
-```
-kubectl label namespace ssak4 istio-injection=enabled
-
-# error: 'istio-injection' already has a value (enabled), and --overwrite is false
-```
-* 리뷰 서비스 모두 아무런 변경 없음
-
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
-- 동시사용자 100명
-- 60초 동안 실시
-```console
-siege -v -c100 -t60S -r10 --content-type "application/json" 'http://cleaning:8080/cleans POST {"requestId": "3","reviewDate": 20200910,"status": "CleaningReview"}'
-
-HTTP/1.1 201     0.23 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.11 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.12 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.17 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.10 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.11 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.14 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.09 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.10 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.14 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.12 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 201     0.33 secs:     269 bytes ==> POST http://cleaning:8080/cleans
-
-Lifting the server siege...
-Transactions:                  27491 hits
-Availability:                 100.00 %
-Elapsed time:                  59.12 secs
-Data transferred:               7.03 MB
-Response time:                  0.20 secs
-Transaction rate:             465.00 trans/sec
-Throughput:                     0.12 MB/sec
-Concurrency:                   92.90
-Successful transactions:       27502
-Failed transactions:               0
-Longest transaction:            2.27
-Shortest transaction:           0.00
-```
-* 서킷 브레이킹을 위한 DestinationRule 적용
-```
-cd ssak4/yaml
-kubectl apply -f review_dr.yaml
-
-destinationrule.networking.istio.io/dr-review created
-```
-```
-HTTP/1.1 500     0.68 secs:     262 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 500     0.70 secs:     262 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 500     0.71 secs:     262 bytes ==> POST http://cleaning:8080/cleans
-HTTP/1.1 500     0.72 secs:     262 bytes ==> POST http://cleaning:8080/cleans
-
-siege aborted due to excessive socket failure; you
-can change the failure threshold in $HOME/.siegerc
-
-Transactions:                     20 hits
-Availability:                   1.75 %
-Elapsed time:                   9.92 secs
-Data transferred:               0.29 MB
-Response time:                 48.04 secs
-Transaction rate:               2.02 trans/sec
-Throughput:                     0.03 MB/sec
-Concurrency:                   96.85
-Successful transactions:          20
-Failed transactions:            1123
-Longest transaction:            2.53
-Shortest transaction:           0.04
-```
-
-- DestinationRule 적용 실패
-
 ## 오토스케일 아웃
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 함
 * (istio injection 적용한 경우) istio injection 적용 해제
@@ -982,6 +905,83 @@ Containers:
       /var/run/secrets/kubernetes.io/serviceaccount from default-token-qd9hz (ro)
 ...중략
 ```
+
+## 동기식 호출 / 서킷 브레이킹 / 장애격리
+
+### 서킷 브레이킹 프레임워크의 선택: istio-injection + DestinationRule
+
+* istio-injection 적용 (기 적용완료)
+```
+kubectl label namespace ssak4 istio-injection=enabled
+
+# error: 'istio-injection' already has a value (enabled), and --overwrite is false
+```
+* 리뷰 서비스 모두 아무런 변경 없음
+
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
+- 동시사용자 100명
+- 60초 동안 실시
+```console
+siege -v -c100 -t60S -r10 --content-type "application/json" 'http://cleaning:8080/cleans POST {"requestId": "3","reviewDate": 20200910,"status": "CleaningReview"}'
+
+HTTP/1.1 201     0.23 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.11 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.12 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.17 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.10 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.11 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.14 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.09 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.10 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.14 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.12 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 201     0.33 secs:     269 bytes ==> POST http://cleaning:8080/cleans
+
+Lifting the server siege...
+Transactions:                  27491 hits
+Availability:                 100.00 %
+Elapsed time:                  59.12 secs
+Data transferred:               7.03 MB
+Response time:                  0.20 secs
+Transaction rate:             465.00 trans/sec
+Throughput:                     0.12 MB/sec
+Concurrency:                   92.90
+Successful transactions:       27502
+Failed transactions:               0
+Longest transaction:            2.27
+Shortest transaction:           0.00
+```
+* 서킷 브레이킹을 위한 DestinationRule 적용
+```
+cd ssak4/yaml
+kubectl apply -f review_dr.yaml
+
+destinationrule.networking.istio.io/dr-review created
+```
+```
+HTTP/1.1 500     0.68 secs:     262 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 500     0.70 secs:     262 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 500     0.71 secs:     262 bytes ==> POST http://cleaning:8080/cleans
+HTTP/1.1 500     0.72 secs:     262 bytes ==> POST http://cleaning:8080/cleans
+
+siege aborted due to excessive socket failure; you
+can change the failure threshold in $HOME/.siegerc
+
+Transactions:                     20 hits
+Availability:                   1.75 %
+Elapsed time:                   9.92 secs
+Data transferred:               0.29 MB
+Response time:                 48.04 secs
+Transaction rate:               2.02 trans/sec
+Throughput:                     0.03 MB/sec
+Concurrency:                   96.85
+Successful transactions:          20
+Failed transactions:            1123
+Longest transaction:            2.53
+Shortest transaction:           0.04
+```
+
+- DestinationRule 적용 실패ㅠㅠ
 
 # 개인 MSA
 1. 고객관리 (이름, 주소 등등) => 연제경 
