@@ -806,6 +806,89 @@ Shortest transaction:           0.00
 
 - 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
+## liveness 적용 확인
+- reveiw_li.yaml 설정 참고
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review
+  namespace: ssak12
+  labels:
+    app: review
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review
+  template:
+    metadata:
+      labels:
+        app: review
+    spec:
+      containers:
+        - name: review
+          image: ssak12acr.azurecr.io/review:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/healthxxxxx'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: review
+  namespace: ssak12
+  labels:
+    app: review
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: review
+```
+
+- liveness 체크가 실패나는 yaml로 배포
+```console
+root@ssak12-vm:/home/skccadmin/ssak12/yaml# kubectl apply -f review_li.yaml
+deployment.apps/review configured
+service/review unchanged
+```
+- 에러 확인
+```console
+root@ssak12-vm:/home/skccadmin/ssak12/yaml# kubectl describe pod/review-6757d956c-hq4mn -n ssak12
+....중략...
+Events:
+  Type     Reason     Age                  From      Message
+  ----     ------     ----                 ----      -------
+  Normal   Scheduled  3m27s                default-scheduler      Successfully assigned ssak12/review-6757d956c-hq4mn to aks-agentpool-37725767-vmss000001
+  Normal   Pulling    60s (x2 over 3m26s)  kubelet, aks-agentpool-37725767-vmss000001  Pulling image "ssak12acr.azurecr.io/review:1.0"
+  Warning  Unhealthy  60s (x5 over 80s)    kubelet, aks-agentpool-37725767-vmss000001  Liveness probe failed: HTTP probe failed with statuscode: 404
+  Normal   Killing    60s                  kubelet, aks-agentpool-37725767-vmss000001  Container review failed liveness probe, will be restarted
+  Normal   Pulled     59s (x2 over 3m23s)  kubelet, aks-agentpool-37725767-vmss000001  Successfully pulled image "ssak12acr.azurecr.io/review:1.0"
+  Normal   Created    59s (x2 over 3m21s)  kubelet, aks-agentpool-37725767-vmss000001  Created container review
+  Normal   Started    59s (x2 over 3m21s)  kubelet, aks-agentpool-37725767-vmss000001  Started container review
+  Warning  Unhealthy  45s (x3 over 3m10s)  kubelet, aks-agentpool-37725767-vmss000001  Readiness probe failed: Get http://10.244.0.21:8080/actuator/health: dial tcp 10.244.0.21:8080: connect: connection refused
+```
+
 ## ConfigMap 사용
 - 시스템별로 또는 운영중에 동적으로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리합니다.
 - configmap.yaml
