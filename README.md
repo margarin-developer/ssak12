@@ -716,8 +716,7 @@ Longest transaction:            2.53
 Shortest transaction:           0.04
 ```
 
-- DestinationRule 적용되어 서킷 브레이킹 동작 확인 (kiali 화면)
-  ![kiali2](https://user-images.githubusercontent.com/69634194/92505880-94b56a00-f23f-11ea-9b10-b1e43e195ca2.png)
+- DestinationRule 적용 실패
 
 ## 오토스케일 아웃
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 함
@@ -793,7 +792,7 @@ Longest transaction:            7.33
 Shortest transaction:           0.01
 ```
 
-## 무정지 재배포 (liveless, readness)
+## 무정지 재배포 (readness)
 - 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함 (위의 시나리오에서 제거되었음)
 ```console
 kubectl delete horizontalpodautoscaler.autoscaling/review -n ssak12
