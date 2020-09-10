@@ -36,7 +36,7 @@ public class DashBoardViewViewHandler {
     }
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenCleaningFinished_then_CREATE_1 (@Payload CleaningFinished cleaningFinished) {
+    public void whenCleaningFinished_then_CREATE_2 (@Payload CleaningFinished cleaningFinished) {
         try {
             if (cleaningFinished.isMe()) {
                 // view 객체 생성

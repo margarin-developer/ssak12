@@ -163,17 +163,16 @@ public class DashBoardViewViewHandler {
     ...
     // Insert 추가
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenReviewCompleted_then_UPDATE_3(@Payload ReviewCompleted reviewCompleted) {
+    public void whenCleaningFinished_then_CREATE_2 (@Payload CleaningFinished cleaningFinished) {
         try {
-            if (reviewCompleted.isMe()) {
-                // view 객체 조회
-                List<DashBoardView> dashBoardViewList = dashBoardViewRepository.findByRequestId(reviewCompleted.getRequestId());
-                for(DashBoardView dashBoardView : dashBoardViewList){
-                    // view 객체에 이벤트의 eventDirectValue 를 set 함
-                    dashBoardView.setReviewDate(reviewCompleted.getReviewDate());
-                    // view 레파지 토리에 save
-                    dashBoardViewRepository.save(dashBoardView);
-                }
+            if (cleaningFinished.isMe()) {
+                // view 객체 생성
+                DashBoardView dashBoardView = new DashBoardView();
+                // view 객체에 이벤트의 Value 를 set 함
+                dashBoardView.setRequestId(cleaningFinished.getRequestId());
+                dashBoardView.setStatus(cleaningFinished.getStatus());
+                // view 레파지 토리에 save
+                dashBoardViewRepository.save(dashBoardView);
             }
         }catch (Exception e){
             e.printStackTrace();
