@@ -339,14 +339,6 @@ http POST http://reservation:8080/cleans status=CleaningFinished requestId=4 cle
 http POST http://reservation:8080/reviews status=CleaningFinished requestId=4 content=Excellent
 ```
 
-## 폴리글랏 퍼시스턴스
-
-  * 각 마이크로서비스의 특성에 따라 데이터 저장소를 RDB, DocumentDB/NoSQL 등 다양하게 사용할 수 있지만, 시간적/환경적 특성상 모두 H2 메모리DB를 적용하였다.
-
-## 폴리글랏 프로그래밍
-  
-  * 각 마이크로서비스의 특성에 따라 다양한 프로그래밍 언어를 사용하여 구현할 수 있지만, 시간적/환경적 특성상 Java를 이용하여 구현하였다.
-
 ## 동기식 호출 과 Fallback 처리
 분석단계에서의 조건 중 하나로 청소->리뷰 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
 
@@ -417,8 +409,8 @@ public class Review {
 # 리뷰 서비스를 잠시 내려놓음
 $ kubectl delete -f review.yaml
 
-# 리뷰작성 (추가된 부분)
-http POST http://reservation:8080/reviews status=CleaningFinished requestId=4 content=Excellent
+# 리뷰등록 (Clean에서 CleaningFinished 되면 동기로 시작)
+http POST http://cleaning:8080/cleans requestId=2 reviewDate=20200909 status=CleaningFinished
 
 # 예약처리 시 에러 내용
 HTTP/1.1 500 Internal Server Error
@@ -443,8 +435,9 @@ NAME                           READY   STATUS    RESTARTS   AGE
 review-7b59f74c46-h6q6v        2/2     Running   0          108s
 siege                          2/2     Running   0          96m
 
-# 리뷰등록 (추가된 부분)
-http POST http://reservation:8080/reviews status=CleaningFinished requestId=4 content=Excellent
+# 리뷰등록 (Clean에서 CleaningFinished 되면 동기로 시작)
+http POST http://cleaning:8080/cleans requestId=2 reviewDate=20200909 status=CleaningFinished
+http POST http://cleaning:8080/cleans requestId=2 reviewDate=20200909 status=CleaningFinished
 
 # 처리결과
 HTTP/1.1 201 Created
